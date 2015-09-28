@@ -141,10 +141,31 @@ app.controller('PostsCtrl',[
         $scope.hideAddNewCommentForm = function(comment) {
             $scope.shouldShowAddNewCommentForm = false;
             $scope.body = "";
-        };      
+        };
+
+        $scope.editorEnabled = false;      
 
         // $scope.showAddNewCommentForm = showAddNewCommentForm;
         // $scope.hideAddNewCommentForm = hideAddNewCommentForm;
+
+      $scope.enableEditor = function() {
+        $scope.editorEnabled = true;
+        $scope.link = $scope.post.link;
+      };
+
+      $scope.disableEditor = function() {
+        $scope.editorEnabled = false;
+      };
+
+      $scope.save = function() {
+        $scope.post.link = $scope.link;
+        
+        // save into db
+       
+        posts.save($scope.post);
+        $scope.disableEditor();
+      };
+    // }]);
 
 
     }]);
@@ -195,6 +216,15 @@ app.factory('posts',['$http','auth', function($http, auth){
             o.posts.push(data);
         });
     };
+
+    // update post...
+    o.save = function(post) {
+        return $http.post('/posts/' + post._id, post, {
+            headers: {Authorization: 'Bearer ' + auth.getToken()}
+        }).success(function(data) {
+             // TODO - what is the best practice after saving??
+        });
+    };    
 
 
     o.deletePost = function(post) {

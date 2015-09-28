@@ -127,6 +127,23 @@
         </div>
         </div>
 
+        <!-- Post View for Edit -->
+        <div ng-hide="editorEnabled">
+          <span style="font-size:30px; margin-left:10px;">
+            {{post.link}}
+          </span>
+          <a href="#" ng-click="enableEditor()">Edit</a>
+        </div>
+        <div ng-show="editorEnabled">
+          <span style="font-size:30px; margin-left:10px;">
+            <input  ng-show="editorEnabled" ng-model="link" ></input>
+          </span>
+          <a href="#" ng-click="save()">Save</a>
+          or
+          <a href="#" ng-click="disableEditor()">cancel</a>.
+        </div>
+        
+        <!-- list of comments -->
         <div ng-repeat="comment in post.comments | orderBy:'-upvotes'">
             <span class="glyphicon glyphicon-thumbs-up"
               ng-click="incrementUpvotes(comment)"></span>

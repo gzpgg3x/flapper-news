@@ -222,6 +222,48 @@ router.post('/posts', auth, function(req,res,next){
     });
 });
 
+// Update post
+// router.post('/posts/:post', auth, function(req, res, next) {
+//       console.log(req.post.author);
+//       console.log(req.payload._id);
+//       console.log(req.post.author + "     " + req.payload._id);      
+//       if (req.post.author != req.payload._id) {
+//         res.statusCode = 401;
+//         return res.end("invalid authorization");
+//       }
+
+//     Post.findByIdAndUpdate(req.post.id,  req.body, function(err, post) {
+//         if (err) {
+//             return next(err);
+//         }
+//         else {
+//             res.json(post);
+//         }
+//     });
+// });
+
+router.post('/posts/:post', auth, function(req, res, next) {
+      console.log(req.post.author);
+      console.log(req.payload._id);
+      console.log(req.post.author + "     " + req.payload._id);      
+      if (req.post.author != req.payload._id) {
+        res.statusCode = 401;
+        return res.end("invalid authorization");
+      } else {
+        Post.findByIdAndUpdate(req.post.id,  req.body, function(err, post) {
+            if (err) {
+                return next(err);
+            }
+            else {
+                res.json(post);
+            }
+        });
+        
+      }
+
+
+});    
+
 
 /*PUT - Upvote a post*/
 router.put('/posts/:post/upvote', auth, function(req,res, next){
