@@ -34,7 +34,8 @@
             <h1>Flapper News</h1>
           </div>
 
-        <div ng-repeat="post in posts">
+        // <div ng-repeat="post in posts">
+        <div ng-repeat="post in posts"  | orderBy: '-(upvotes)'" ng-mouseenter="post.hover = true" ng-mouseleave="post.hover = false">        
             <span class="glyphicon glyphicon-thumbs-up" ng-click="incrementUpvotes(post)"></span>
             {{post.upvotes}} 
             <span class="glyphicon glyphicon-thumbs-down" ng-click="decrementUpvotes(post)"></span>
@@ -53,9 +54,16 @@
                 </span>
             </span>
 
-            <!-- delete post per rojaware-->
+        <%#    <!-- delete post per rojaware-->
                 <span class="glyphicon glyphicon-remove"
-            ng-click="deletePost(post)"></span>
+            ng-click="deletePost(post)"></span>   %>
+
+            <!-- delete post per philipdnichols-->
+              <div class="vertical-align pull-right" ng-show="showDeletePost(post) && post.hover">
+                <a href="" ng-click="deletePost(post)">
+                  <i class="fa fa-lg fa-remove text-danger"></i>
+                </a>
+              </div>
 
         </div>
 
