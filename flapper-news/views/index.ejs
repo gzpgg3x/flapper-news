@@ -2,7 +2,7 @@
     <head>
         <title>Angular App</title>
         <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-
+        <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.10/angular.min.js"></script>
         <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.js"></script>
 
@@ -142,9 +142,10 @@
           or
           <a href="#" ng-click="disableEditor()">cancel</a>.
         </div>
-        
+
         <!-- list of comments -->
-        <div ng-repeat="comment in post.comments | orderBy:'-upvotes'">
+        <%#<div ng-repeat="comment in post.comments | orderBy:'-upvotes'">%>        
+        <div ng-repeat="comment in post.comments | orderBy:'-upvotes'" ng-mouseenter="comment.hover = true" ng-mouseleave="comment.hover = false">
             <span class="glyphicon glyphicon-thumbs-up"
               ng-click="incrementUpvotes(comment)"></span>
             {{comment.upvotes}} 
@@ -158,11 +159,16 @@
               {{comment.body}}
             </span>
 
-            <!-- delete comment per rojaware-->
-            <span class="glyphicon glyphicon-remove"
-                ng-click="deleteComment(comment)"></span>
+            <%#<!-- delete comment per rojaware-->
+              <span class="glyphicon glyphicon-remove"
+                ng-click="deleteComment(comment)"></span>%>
 
-            
+            <!-- delete comment per philipdnichols-->
+              <div class="vertical-align pull-right" ng-show="showDeleteComment(comment) && comment.hover">
+                <a href="" ng-click="deleteComment(comment)">
+                  <i class="fa fa-lg fa-remove text-danger"></i>
+                </a>
+              </div>            
         </div>
     </script>
     <script type="text/ng-template" id="/register.html">

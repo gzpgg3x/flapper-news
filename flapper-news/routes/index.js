@@ -222,7 +222,7 @@ router.post('/posts', auth, function(req,res,next){
     });
 });
 
-// Update post
+/*Update post*/
 // router.post('/posts/:post', auth, function(req, res, next) {
 //       console.log(req.post.author);
 //       console.log(req.payload._id);

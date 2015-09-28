@@ -143,6 +143,10 @@ app.controller('PostsCtrl',[
             $scope.body = "";
         };
 
+        $scope.showDeleteComment = function(comment) {
+            return comment.author._id == auth.currentUserId();
+          }        
+
         $scope.editorEnabled = false;      
 
         // $scope.showAddNewCommentForm = showAddNewCommentForm;
