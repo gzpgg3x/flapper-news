@@ -43,8 +43,8 @@ router.get('/', function(req, res, next) {
     })
     .post(auth, function(req, res, next) {
       var post = new Post(req.body);
-      //post.upvotes = 1;
-      //post.usersWhoUpvoted.push(req.payload._id);
+      post.upvotes = 1;
+      post.usersWhoUpvoted.push(req.payload._id);
 
       post.save(function(err, post) {
         if (err) {
@@ -142,15 +142,31 @@ router.post('/login', function(req, res, next){
 router.post('/posts', auth, function(req,res,next){
     var post = new Post(req.body);
     // post.author = req.payLoad.username;
-    post.author = req.payload.username;
-    console.log(post.author);
-    post.save(function(err, post){
+//     post.author = req.payload.username;
+//     console.log(post.author);
+//     post.save(function(err, post){
 
-        if (err) {next(err);};
+//         if (err) {next(err);};
 
-        res.json(post);
-    })
-});
+//         res.json(post);
+//     })
+// });
+      post.upvotes = 1;
+      post.usersWhoUpvoted.push(req.payload._id);
+
+      post.save(function(err, post) {
+        if (err) {
+          return next(err);
+        }
+
+        Post.populate(post, {
+          path: "author",
+          select: "username"
+        }).then(function(post) {
+          res.json(post);
+        });
+      });
+    });
 
 /* POST - Create a comment to a post */
 // router.post('/posts/:post/comments', auth , function(req,res,next){
@@ -174,8 +190,8 @@ router.post('/posts', auth, function(req,res,next){
     .post(auth, function(req, res, next) {
       var comment = new Comment(req.body);
       comment.post = req.post;
-      //comment.upvotes = 1;
-      //comment.usersWhoUpvoted.push(req.payload._id);
+      comment.upvotes = 1;
+      comment.usersWhoUpvoted.push(req.payload._id);
 
       comment.save(function(err, comment) {
         if (err) {
@@ -266,36 +282,99 @@ router.post('/posts/:post', auth, function(req, res, next) {
 
 
 /*PUT - Upvote a post*/
-router.put('/posts/:post/upvote', auth, function(req,res, next){
-    req.post.upvote(function(err, post){
-        if (err) {return next(err);};
-        res.json(post);
+// router.put('/posts/:post/upvote', auth, function(req,res, next){
+//     req.post.upvote(function(err, post){
+//         if (err) {return next(err);};
+//         res.json(post);
+//     });
+// });
+  router.route("/posts/:post/upvote")
+    .put(auth, function(req, res, next) {
+      req.post.upvote(req.payload, function(err, post) {
+        if (err) {
+          return next(err);
+        }
+
+        Post.populate(post, {
+          path: "author",
+          select: "username"
+        }).then(function(post) {
+          res.json(post);
+        });
+      });
     });
-});
 
 /*PUT - Downvote a post */
-router.put('/posts/:post/downvote', auth, function(req, res, next){
-    req.post.downvote(function(err, post){
-        if (err) {return next(err);};
-        res.json(post);
+// router.put('/posts/:post/downvote', auth, function(req, res, next){
+//     req.post.downvote(function(err, post){
+//         if (err) {return next(err);};
+//         res.json(post);
+//     });
+// });
+  router.route("/posts/:post/downvote")
+    .put(auth, function(req, res, next) {
+      req.post.downvote(req.payload, function(err, post) {
+        if (err) {
+          return next(err);
+        }
+
+        Post.populate(post, {
+          path: "author",
+          select: "username"
+        }).then(function(post) {
+          res.json(post);
+        });
+      });
     });
-});
+
+
+
 
 /*PUT - Upvote a comment on a post */
-router.put('/posts/:post/comments/:comment/upvote', auth, function(req,res,next){
-    req.comment.upvote(function(err, comment){
-        if (err) {return next(err);};
-        res.json(comment);
+// router.put('/posts/:post/comments/:comment/upvote', auth, function(req,res,next){
+//     req.comment.upvote(function(err, comment){
+//         if (err) {return next(err);};
+//         res.json(comment);
+//     });
+// });
+  router.route("/posts/:post/comments/:comment/upvote")
+    .put(auth, function(req, res, next) {
+      req.comment.upvote(req.payload, function(err, comment) {
+        if (err) {
+          return next(err);
+        }
+
+        Comment.populate(comment, {
+          path: "author",
+          select: "username"
+        }).then(function(comment) {
+          res.json(comment);
+        });
+      });
     });
-});
 
 /*PUT - downvote a comment on a post */
-router.put('/posts/:post/comments/:comment/downvote', auth, function(req,res,next){
-    req.comment.downvote(function(err, comment){
-        if (err) {return next(err);};
-        res.json(comment);
+// router.put('/posts/:post/comments/:comment/downvote', auth, function(req,res,next){
+//     req.comment.downvote(function(err, comment){
+//         if (err) {return next(err);};
+//         res.json(comment);
+//     });
+// });
+  router.route("/posts/:post/comments/:comment/downvote")
+    .put(auth, function(req, res, next) {
+      req.comment.downvote(req.payload, function(err, comment) {
+        if (err) {
+          return next(err);
+        }
+
+        Comment.populate(comment, {
+          path: "author",
+          select: "username"
+        }).then(function(comment) {
+          res.json(comment);
+        });
+      });
     });
-});
 
 router.param('post', function(req,res,next,id){
     var query = Post.findById(id);

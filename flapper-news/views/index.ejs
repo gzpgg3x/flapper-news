@@ -34,8 +34,9 @@
             <h1>Flapper News</h1>
           </div>
 
-        // <div ng-repeat="post in posts">
-        <div ng-repeat="post in posts"  | orderBy: '-(upvotes)'" ng-mouseenter="post.hover = true" ng-mouseleave="post.hover = false">        
+        <!-- <div ng-repeat="post in posts"> -->
+        <%#
+        <div ng-repeat="post in posts"   orderBy: '-(upvotes)'" ng-mouseenter="post.hover = true" ng-mouseleave="post.hover = false">        
             <span class="glyphicon glyphicon-thumbs-up" ng-click="incrementUpvotes(post)"></span>
             {{post.upvotes}} 
             <span class="glyphicon glyphicon-thumbs-down" ng-click="decrementUpvotes(post)"></span>
@@ -46,7 +47,7 @@
                 </a>
                 <span ng-show="post.author">
                     
-                    posted by <a>{{post.author.username}}</a> | 
+                    posted by <a>{{post.author.username}}</a>  
                 </span>
                 <span ng-hide="post.link">{{post.title}}</span>
                 <span>
@@ -54,20 +55,42 @@
                 </span>
             </span>
 
-        <%#    <!-- delete post per rojaware-->
-                <span class="glyphicon glyphicon-remove"
-            ng-click="deletePost(post)"></span>   %>
-
             <!-- delete post per philipdnichols-->
               <div class="vertical-align pull-right" ng-show="showDeletePost(post) && post.hover">
                 <a href="" ng-click="deletePost(post)">
                   <i class="fa fa-lg fa-remove text-danger"></i>
                 </a>
               </div>
-
         </div>
+        %>
 
 
+<div ng-repeat="post in posts | orderBy: '-(upvotes - downvotes)'" ng-mouseenter="post.hover = true" ng-mouseleave="post.hover = false">
+  {{post.upvotes - post.downvotes}}
+  <a href="" ng-click="incrementUpvotes(post)"><i class="fa fa-lg fa-thumbs-up" ng-class="getUpvoteColor(post)" ng-mouseenter="post.upvoteHover = true" ng-mouseleave="post.upvoteHover = false"></i></a>
+  <a href="" ng-click="incrementDownvotes(post)"><i class="fa fa-lg fa-thumbs-down" ng-class="getDownvoteColor(post)" ng-mouseenter="post.downvoteHover = true" ng-mouseleave="post.downvoteHover = false"></i></a>
+  <span style="font-size:20px; margin-left:10px;">
+    <a ng-show="post.link" target="_blank" href="{{post.link}}">
+      {{post.title}}
+    </a>
+    <span ng-hide="post.link">
+      {{post.title}}
+    </span>
+    - upvotes: {{post.upvotes}} | downvotes: {{post.downvotes}}
+  </span>
+  <span ng-show="post.author">
+    posted by <a>{{post.author.username}}</a> |
+  </span>
+  <span>
+    <!-- <a ui-sref="post({ id: post._id })">Comments ({{post.comments.length}})</a> -->
+    <a href="#/posts/{{post._id}}">Comments ({{post.comments.length}})</a>
+  </span>
+  <div class="vertical-align pull-right" ng-show="showDeletePost(post) && post.hover">
+    <a href="" ng-click="deletePost(post)">
+      <i class="fa fa-lg fa-remove text-danger"></i>
+    </a>
+  </div>
+</div>
 
 
 
@@ -152,8 +175,9 @@
         </div>
 
         <!-- list of comments -->
-        <%#<div ng-repeat="comment in post.comments | orderBy:'-upvotes'">%>        
-        <div ng-repeat="comment in post.comments | orderBy:'-upvotes'" ng-mouseenter="comment.hover = true" ng-mouseleave="comment.hover = false">
+        <%#<div ng-repeat="comment in post.comments  orderBy:'-upvotes'">%>
+        <%#        
+        <div ng-repeat="comment in post.comments  orderBy:'-upvotes'" ng-mouseenter="comment.hover = true" ng-mouseleave="comment.hover = false">
             <span class="glyphicon glyphicon-thumbs-up"
               ng-click="incrementUpvotes(comment)"></span>
             {{comment.upvotes}} 
@@ -161,15 +185,13 @@
             <span class="glyphicon glyphicon-thumbs-down"
               ng-click="decrementUpvotes(comment)"></span>
 
-            <%#- by {{comment.author}}%>  
+  
             - by {{comment.author.username}} 
             <span style="font-size:20px; margin-left:10px;">
               {{comment.body}}
             </span>
 
-            <%#<!-- delete comment per rojaware-->
-              <span class="glyphicon glyphicon-remove"
-                ng-click="deleteComment(comment)"></span>%>
+
 
             <!-- delete comment per philipdnichols-->
               <div class="vertical-align pull-right" ng-show="showDeleteComment(comment) && comment.hover">
@@ -178,6 +200,24 @@
                 </a>
               </div>            
         </div>
+        %>
+
+<div ng-repeat="comment in post.comments | orderBy: '-(upvotes - downvotes)'" ng-mouseenter="comment.hover = true" ng-mouseleave="comment.hover = false">
+  {{comment.upvotes - comment.downvotes}}
+  <a href="" ng-click="incrementUpvotes(comment)">
+    <i class="fa fa-lg fa-thumbs-up" ng-class="getUpvoteColor(comment)" ng-mouseenter="comment.upvoteHover = true" ng-mouseleave="comment.upvoteHover = false"></i>
+  </a>
+  <a href="" ng-click="incrementDownvotes(comment)">
+    <i class="fa fa-lg fa-thumbs-down" ng-class="getDownvoteColor(comment)" ng-mouseenter="comment.downvoteHover = true" ng-mouseleave="comment.downvoteHover = false"></i>
+  </a> - by {{comment.author.username}}
+  <span style="font-size:20px; margin-left:10px;">{{comment.body}}</span>
+  <div class="vertical-align pull-right" ng-show="showDeleteComment(comment) && comment.hover">
+    <a href="" ng-click="deleteComment(comment)">
+      <i class="fa fa-lg fa-remove text-danger"></i>
+    </a>
+  </div>
+</div>
+
     </script>
     <script type="text/ng-template" id="/register.html">
         <div class="page-header">

@@ -38,13 +38,52 @@ app.controller("MainCtrl",[
         posts.deletePost(post);
     };    
 
-    $scope.incrementUpvotes = function(post){
-        posts.upvote(post);
-    };
-    $scope.decrementUpvotes = function(post){
-        posts.downvote(post);
-    };
+    // $scope.incrementUpvotes = function(post){
+    //     posts.upvote(post);
+    // };
+    // $scope.decrementUpvotes = function(post){
+    //     posts.downvote(post);
+    // };
 
+    $scope.incrementUpvotes = function (post) {
+        posts.upvote(post);
+      }
+
+    $scope.incrementDownvotes = function (post) {
+        posts.downvote(post);
+      } 
+
+    $scope.getUpvoteColor = function (post) {
+        if (post.upvoteHover || isUpvotedByCurrentUser(post)) {
+          return "text-primary";
+        } else {
+          return "text-muted";
+        }
+      }
+
+    $scope.getDownvoteColor = function (post) {
+        if (post.downvoteHover || isDownvotedByCurrentUser(post)) {
+          return "text-danger";
+        } else {
+          return "text-muted";
+        }
+      }
+
+    // $scope.isUpvotedByCurrentUser = function (post) {
+    //     return post.usersWhoUpvoted.indexOf(auth.currentUserId()) != -1;
+    //   }
+
+    // $scope.isDownvotedByCurrentUser = function (post) {
+    //     return post.usersWhoDownvoted.indexOf(auth.currentUserId()) != -1;
+    //   }
+
+      function isUpvotedByCurrentUser(post) {
+        return post.usersWhoUpvoted.indexOf(auth.currentUserId()) != -1;
+      }
+
+      function isDownvotedByCurrentUser(post) {
+        return post.usersWhoDownvoted.indexOf(auth.currentUserId()) != -1;
+      }
     //from philipdnichols
       // function showAddNewPostForm() {
       //   $scope.shouldShowAddNewPostForm = true      // }
@@ -100,12 +139,17 @@ app.controller('PostsCtrl',[
             $scope.shouldShowAddNewCommentForm = false; //new from philipdnichols
 
         };
+
         $scope.incrementUpvotes = function(comment){
             posts.upvoteComment(post, comment);
         };
-        $scope.decrementUpvotes = function(comment){
+
+        // $scope.decrementUpvotes = function(comment){
+        //     posts.downvoteComment(post, comment);
+        // };
+        $scope.incrementDownvotes = function(comment) {
             posts.downvoteComment(post, comment);
-        };
+      }
 
       //new from philipdnichols
       // function deleteComment(comment) {
@@ -121,7 +165,40 @@ app.controller('PostsCtrl',[
           .success(function() {
             post.comments.splice(post.comments.indexOf(comment), 1);
           });
-        }        
+        } 
+
+      $scope.getUpvoteColor = function (comment) {
+        if (comment.upvoteHover || isUpvotedByCurrentUser(comment)) {
+          return "text-primary";
+        } else {
+          return "text-muted";
+        }
+      }
+
+      $scope.getDownvoteColor = function (comment) {
+        if (comment.downvoteHover || isDownvotedByCurrentUser(comment)) {
+          return "text-danger";
+        } else {
+          return "text-muted";
+        }
+      }
+
+     // $scope.isUpvotedByCurrentUser = function (comment) {
+     //    return comment.usersWhoUpvoted.indexOf(auth.currentUserId()) != -1;
+     //  }
+
+     // $scope.isDownvotedByCurrentUser = function (comment) {
+     //    return comment.usersWhoDownvoted.indexOf(auth.currentUserId()) != -1;
+      // }
+
+      function isUpvotedByCurrentUser(comment) {
+        return comment.usersWhoUpvoted.indexOf(auth.currentUserId()) != -1;
+      }
+
+      function isDownvotedByCurrentUser(comment) {
+        return comment.usersWhoDownvoted.indexOf(auth.currentUserId()) != -1;
+      }
+
 
         //new from philipdnichols
       // function showAddNewCommentForm() {
@@ -152,10 +229,27 @@ app.controller('PostsCtrl',[
         // $scope.showAddNewCommentForm = showAddNewCommentForm;
         // $scope.hideAddNewCommentForm = hideAddNewCommentForm;
 
+      // $scope.enableEditor = function() {
+      //   $scope.editorEnabled = true;
+      //   $scope.link = $scope.post.link;
+      // };
+
+      //want to try if statement below
       $scope.enableEditor = function() {
+
+        // console.log(req.post.author);
+        // console.log(req.payload._id);
+        // console.log(req.post.author + "     " + req.payload._id);
+        // if (req.post.author != req.payload._id) {
+        //   res.statusCode = 401;
+        //   return res.end("invalid authorization");
+        // } else {
+
         $scope.editorEnabled = true;
         $scope.link = $scope.post.link;
-      };
+
+        // }
+      };      
 
       $scope.disableEditor = function() {
         $scope.editorEnabled = false;
@@ -239,26 +333,43 @@ app.factory('posts',['$http','auth', function($http, auth){
         }).success(function() {
           o.posts.splice(o.posts.indexOf(post), 1);
         });
-    };
+    };      
 
-            
+    // o.upvote = function(post){
+    //     return $http.put('/posts/'+post._id+'/upvote', null, {
+    //         headers: {Authorization: 'Bearer ' + auth.getToken()}
+    //     }).success(function(data){
+    //         post.upvotes++;
+    //     });
+    // };
+    // o.downvote = function(post){
+    //     return $http.put('/posts/' + post._id + '/downvote', null, {
+    //         headers: {Authorization: 'Bearer ' + auth.getToken()}
+    //     }).success(function(data){
+    //         post.upvotes--;
+    //     });
+    // };
 
-
-
-    o.upvote = function(post){
-        return $http.put('/posts/'+post._id+'/upvote', null, {
-            headers: {Authorization: 'Bearer ' + auth.getToken()}
-        }).success(function(data){
-            post.upvotes++;
+    o.upvote = function (post) {
+        return $http.put("/posts/" + post._id + "/upvote", null, {
+          headers: {
+            Authorization: "Bearer " + auth.getToken()
+          }
+        }).success(function(upvotedPost) {
+          angular.copy(upvotedPost, post);
         });
-    };
-    o.downvote = function(post){
-        return $http.put('/posts/' + post._id + '/downvote', null, {
-            headers: {Authorization: 'Bearer ' + auth.getToken()}
-        }).success(function(data){
-            post.upvotes--;
+      }
+
+    o.downvote = function (post) {
+        return $http.put("/posts/" + post._id + "/downvote", null, {
+          headers: {
+            Authorization: "Bearer " + auth.getToken()
+          }
+        }).success(function(downvotedPost) {
+          angular.copy(downvotedPost, post);
         });
-    };
+      }
+
     o.get = function(id) {
       return $http.get('/posts/' + id).then(function(res){
         return res.data;
@@ -269,23 +380,43 @@ app.factory('posts',['$http','auth', function($http, auth){
             headers: {Authorization: 'Bearer ' + auth.getToken()}
         });
     };
-    o.upvoteComment = function(post, comment){
-        return $http.put('/posts/' + post._id + '/comments/' + comment._id + '/upvote', null, {
-            headers: {Authorization: 'Bearer ' + auth.getToken()}
-        })
-        .success(function(data){
-            comment.upvotes++;
-        });
-    };
 
-    o.downvoteComment = function(post, comment){
-        return $http.put('/posts/' + post._id + '/comments/' + comment._id + '/downvote', null, {
-            headers: {Authorization: 'Bearer ' + auth.getToken()}
-        })
-        .success(function(data){
-            comment.upvotes--;
+    // o.upvoteComment = function(post, comment){
+    //     return $http.put('/posts/' + post._id + '/comments/' + comment._id + '/upvote', null, {
+    //         headers: {Authorization: 'Bearer ' + auth.getToken()}
+    //     })
+    //     .success(function(data){
+    //         comment.upvotes++;
+    //     });
+    // };
+    o.upvoteComment = function(post, comment) {
+        return $http.put("/posts/" + post._id + "/comments/" + comment._id + "/upvote", null, {
+          headers: {
+            Authorization: "Bearer " + auth.getToken()
+          }
+        }).success(function(upvotedComment) {
+          // TODO should code like this be in the controller or the service?
+          angular.copy(upvotedComment, comment);
         });
-    };
+      }    
+
+    // o.downvoteComment = function(post, comment){
+    //     return $http.put('/posts/' + post._id + '/comments/' + comment._id + '/downvote', null, {
+    //         headers: {Authorization: 'Bearer ' + auth.getToken()}
+    //     })
+    //     .success(function(data){
+    //         comment.upvotes--;
+    //     });
+    // };
+    o.downvoteComment = function(post, comment) {
+        return $http.put("/posts/" + post._id + "/comments/" + comment._id + "/downvote", null, {
+          headers: {
+            Authorization: "Bearer " + auth.getToken()
+          }
+        }).success(function(downvotedComment) {
+          angular.copy(downvotedComment, comment);
+        });
+      }
 
   // per philipdnichols
   // function deleteComment(post, comment) {
